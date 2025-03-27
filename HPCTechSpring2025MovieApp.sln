@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPCTechSpring2025MovieApp", "HPCTechSpring2025MovieApp\HPCTechSpring2025MovieApp\HPCTechSpring2025MovieApp.csproj", "{C1536D23-D3A1-4AC7-9A27-8F9098760259}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPCTechSpring2025MovieApp.Client", "HPCTechSpring2025MovieApp\HPCTechSpring2025MovieApp.Client\HPCTechSpring2025MovieApp.Client.csproj", "{8F1ACFDB-5F61-419B-9D8B-7667CF6CA85E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1536D23-D3A1-4AC7-9A27-8F9098760259}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1536D23-D3A1-4AC7-9A27-8F9098760259}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1536D23-D3A1-4AC7-9A27-8F9098760259}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1536D23-D3A1-4AC7-9A27-8F9098760259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F1ACFDB-5F61-419B-9D8B-7667CF6CA85E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F1ACFDB-5F61-419B-9D8B-7667CF6CA85E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F1ACFDB-5F61-419B-9D8B-7667CF6CA85E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F1ACFDB-5F61-419B-9D8B-7667CF6CA85E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DEAE1A6B-C65D-433F-B402-3E885E237B9D}
+	EndGlobalSection
+EndGlobal
