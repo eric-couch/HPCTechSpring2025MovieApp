@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using HPCTechSpring2025MovieApp.Models;
 using HPCTechSpring2025MovieApp.Data;
 using Microsoft.EntityFrameworkCore;
+using HPCTechSpring2025MovieApp.Shared;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HPCTechSpring2025MovieApp.Controllers;
@@ -55,7 +56,35 @@ public class UserController : Controller
                                      Id = u.Id,
                                      FirstName = u.FirstName,
                                      LastName = u.LastName,
-                                     FavoriteMovies = u.ApplicationUserMovies.Select(aum => aum.Movie).ToList()
+                                     FavoriteMovies = u.ApplicationUserMovies.Select(aum =>
+                                           new MovieDto
+                                           {
+                                               imdbID = aum.Movie.imdbID,
+                                               Title = aum.Movie.Title,
+                                               Year = aum.Movie.Year,
+                                               Rated = aum.Movie.Rated,
+                                               Released = aum.Movie.Released,
+                                               Runtime = aum.Movie.Runtime,
+                                               Genre = aum.Movie.Genre,
+                                               Director = aum.Movie.Director,
+                                               Writer = aum.Movie.Writer,
+                                               Actors = aum.Movie.Actors,
+                                               Plot = aum.Movie.Plot,
+                                               Language = aum.Movie.Language,
+                                               Country = aum.Movie.Country,
+                                               Awards = aum.Movie.Awards,
+                                               Poster = aum.Movie.Poster,
+                                               Metascore = aum.Movie.Metascore,
+                                               imdbRating = aum.Movie.imdbRating,
+                                               imdbVotes = aum.Movie.imdbVotes,
+                                               Type = aum.Movie.Type,
+                                               DVD = aum.Movie.DVD,
+                                               BoxOffice = aum.Movie.BoxOffice,
+                                               Production = aum.Movie.Production,
+                                               Website = aum.Movie.Website,
+                                               Response = aum.Movie.Response
+                                           }
+                                         ).ToList()
                                  }).FirstOrDefaultAsync();
 
             if (userDto == null)

@@ -5,6 +5,7 @@ using HPCTechSpring2025MovieApp.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,9 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingServerAuthenticationStateProvider>();
+
+builder.Services.AddHttpClient("OMDB", 
+    client => client.BaseAddress = new Uri("http://www.omdbapi.com/"));
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
@@ -40,6 +44,13 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 // Add controllers for API endpoints.
 builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "HPCTechSpring2025MovieApp", Version = "v1" });
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,6 +58,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
     app.UseMigrationsEndPoint();
+
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HPCTechSpring2025MovieApp v1"));
 }
 else
 {

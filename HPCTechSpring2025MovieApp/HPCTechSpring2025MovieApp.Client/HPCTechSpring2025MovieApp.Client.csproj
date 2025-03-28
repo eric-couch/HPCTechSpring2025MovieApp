@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.14" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\HPCTechSpring2025MovieApp.Shared\HPCTechSpring2025MovieApp.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
