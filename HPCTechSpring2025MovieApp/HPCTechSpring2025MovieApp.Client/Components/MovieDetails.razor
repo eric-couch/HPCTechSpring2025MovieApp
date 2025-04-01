@@ -1,0 +1,11 @@
+﻿@if (movie is not null)
+{
+    <div class="card border rounded bg-white" style="width: 9rem">
+        <img class="card-img-top" src="@($"http://img.omdbapi.com/?apikey=86c39163&i={movie.imdbID}")" />
+        <div class="card-body">
+            <h5>@movie.Title</h5>
+            <h6>@movie.Plot</h6>
+        </div>
+    </div>
+    
+}

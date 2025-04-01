@@ -1,0 +1,17 @@
+﻿@page "/search"
+@rendermode InteractiveWebAssembly
+@using HPCTechSpring2025MovieApp.Shared
+@using Syncfusion.Blazor.Grids
+
+<h3>Search</h3>
+
+<div class="container-fluid mb-5">
+    <div class="row">
+        <div class="col-3">
+            <input type="text" class="form-control" @bind="searchTerm" placeholder="Search" />
+        </div>
+        <div class="col-1">
+            <button class="btn btn-primary" @onclick="SearchOMDB" >Search</button>
+        </div>
+    </div>
+</div>
