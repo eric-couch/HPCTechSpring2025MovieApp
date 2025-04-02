@@ -1,7 +1,9 @@
 ﻿@page "/search"
 @rendermode InteractiveWebAssembly
 @using HPCTechSpring2025MovieApp.Shared
+@using HPCTechSpring2025MovieApp.Client.Components
 @using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Navigations
 
 <h3>Search</h3>
 
@@ -15,3 +17,29 @@
         </div>
     </div>
 </div>
+
+@if (searchResult?.Search?.Any() ?? false)
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-9">
+                <SfPager PageSize="10" TotalItemsCount="totalItems" ItemClick="PageClick"></SfPager>
+                <SfGrid DataSource="OMDBMovies" TValue="MovieSearchResultItemDto">
+                    <GridEvents TValue="MovieSearchResultItemDto"
+                    RowSelected="GetSelectedRow">
+                    </GridEvents>
+                    <GridColumns>
+                        <GridColumn Field="Title"></GridColumn>
+                        <GridColumn Field="Year"></GridColumn>
+                    </GridColumns>
+                </SfGrid>
+            </div>
+            @if (omdbMovie is not null)
+            {
+                <div class="col-3">
+                    <MovieDetails movie="omdbMovie" />
+                </div>
+            }
+        </div>
+    </div>
+}

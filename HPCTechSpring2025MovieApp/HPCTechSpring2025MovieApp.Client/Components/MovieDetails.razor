@@ -4,8 +4,7 @@
         <img class="card-img-top" src="@($"http://img.omdbapi.com/?apikey=86c39163&i={movie.imdbID}")" />
         <div class="card-body">
             <h5>@movie.Title</h5>
-            <h6>@movie.Plot</h6>
+            <div class="h6" style="display: block; min-width: 0px; height: 9rem;text-overflow: ellipsis">@movie.Plot</div>
         </div>
     </div>
-    
 }
