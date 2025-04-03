@@ -1,0 +1,14 @@
+﻿@page "/qstring"
+@inject NavigationManager navigationManager
+@code {
+    [SupplyParameterFromQuery]
+    public string? filter { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? name { get; set; }
+
+    [SupplyParameterFromQuery(Name ="age")]
+    public int? howOldYouAre { get; set; }
+
+    //navigationManager.GetUriWithQueryParameters("{NAME}", {VALUE});
+}

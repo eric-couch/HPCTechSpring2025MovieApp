@@ -40,4 +40,36 @@ public partial class Search
             OMDBMovies = searchResult.Search;
         }
     }
+
+    public async Task ToolbarClickHandler(ClickEventArgs args)
+    {
+        if (args.Item.Id == "GridMovieAdd")
+        {
+            await AddMovie();
+        }
+    }
+
+    public async Task AddMovie()
+    {
+        if (SelectedMovie is null)
+        {
+            // notify the user with toast response
+            return;
+        }
+        MovieDto newMovie = new MovieDto()
+        {
+            imdbID = SelectedMovie.imdbID
+        };
+
+        var res = await Http.PostAsJsonAsync($"api/add-movie", newMovie);
+
+        if (res.IsSuccessStatusCode)
+        {
+            // toast response success
+        } else
+        {
+            // toast response failure
+        }
+
+    }
 }

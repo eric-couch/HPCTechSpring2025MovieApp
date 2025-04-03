@@ -1,0 +1,9 @@
+﻿@page "/movie/{confirm:bool}/{somethingelse}"
+@* this is part of the URl, NOT the query string *@
+
+<p>movie good: @confirm</p>
+
+@code {
+    [Parameter]
+    public bool confirm { get; set; }
+}

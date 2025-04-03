@@ -1,0 +1,11 @@
+﻿@page "/movie/{*pageRoute}"
+@* this is part of the URl, NOT the query string *@
+
+<p>URL: @PageRoute</p>
+
+@code {
+    [Parameter]
+    public string PageRoute { get; set; }
+
+    
+}

@@ -79,6 +79,11 @@ app.MapControllers();
 // controllername/methodname/parameter
 // https://localhost:7110/user/getmovies/(id)
 
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+    );
+
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(HPCTechSpring2025MovieApp.Client._Imports).Assembly);

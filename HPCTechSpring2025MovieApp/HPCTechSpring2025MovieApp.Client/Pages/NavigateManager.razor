@@ -1,0 +1,10 @@
+﻿@page "/navigate-manager"
+@inject NavigationManager navigationManager
+
+@code {
+    protected override void OnInitialized() 
+    {
+        navigationManager.NavigateTo("/search");
+        //navigationManager.GetUriWithQueryParameters("/search", "page", "1");
+    }
+}

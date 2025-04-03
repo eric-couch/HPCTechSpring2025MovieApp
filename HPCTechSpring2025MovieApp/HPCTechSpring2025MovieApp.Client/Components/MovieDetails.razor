@@ -1,10 +1,10 @@
 ﻿@if (movie is not null)
 {
-    <div class="card border rounded bg-white" style="width: 9rem">
+    <div class="card border rounded bg-white" style="width: 10rem">
         <img class="card-img-top" src="@($"http://img.omdbapi.com/?apikey=86c39163&i={movie.imdbID}")" />
         <div class="card-body">
             <h5>@movie.Title</h5>
-            <div class="h6" style="display: block; min-width: 0px; height: 9rem;text-overflow: ellipsis">@movie.Plot</div>
+            <div class="h6" style="height: 9rem; overflow-y:scroll;overflow-x:clip;">@movie.Plot</div>
         </div>
     </div>
 }

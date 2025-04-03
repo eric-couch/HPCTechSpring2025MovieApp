@@ -24,9 +24,17 @@
         <div class="row">
             <div class="col-9">
                 <SfPager PageSize="10" TotalItemsCount="totalItems" ItemClick="PageClick"></SfPager>
-                <SfGrid DataSource="OMDBMovies" TValue="MovieSearchResultItemDto">
+                <SfGrid     DataSource="OMDBMovies" 
+                            TValue="MovieSearchResultItemDto"
+                            Toolbar="@(new List<object>() { 
+                                            new ItemModel() { 
+                                                                Text="Add Movie", 
+                                                                PrefixIcon = "e-add",
+                                                                Id="GridMovieAdd"} })">
+
                     <GridEvents TValue="MovieSearchResultItemDto"
-                    RowSelected="GetSelectedRow">
+                                RowSelected="GetSelectedRow"
+                                OnToolbarClick="ToolbarClickHandler">
                     </GridEvents>
                     <GridColumns>
                         <GridColumn Field="Title"></GridColumn>
