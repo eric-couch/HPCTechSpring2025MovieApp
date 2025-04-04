@@ -4,6 +4,7 @@ using HPCTechSpring2025MovieApp.Models;
 using HPCTechSpring2025MovieApp.Data;
 using Microsoft.EntityFrameworkCore;
 using HPCTechSpring2025MovieApp.Shared;
+using HPCTechSpring2025MovieApp.Shared.Wrapper;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HPCTechSpring2025MovieApp.Controllers;
@@ -93,7 +94,7 @@ public class UserController : Controller
             }
             else
             {
-                return Ok(userDto);
+                return Ok(new DataResponse<UserDto>(userDto));
             }
         }
     }

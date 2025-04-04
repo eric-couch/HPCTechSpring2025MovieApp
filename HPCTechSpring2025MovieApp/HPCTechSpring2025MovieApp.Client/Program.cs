@@ -1,4 +1,5 @@
 using HPCTechSpring2025MovieApp.Client;
+using HPCTechSpring2025MovieApp.Client.HttpRepo;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Syncfusion.Blazor;
@@ -15,5 +16,6 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 builder.Services.AddSyncfusionBlazor();
+builder.Services.AddScoped<IUserMoviesHttpRepository, UserMoviesHttpRepository>();
 
 await builder.Build().RunAsync();

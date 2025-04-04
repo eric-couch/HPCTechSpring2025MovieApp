@@ -92,18 +92,19 @@ public class MovieController : Controller
         var userName = User.Identity?.Name;
         var user = await _userManager.FindByNameAsync(userName);
 
-        if (user is null) 
+        if (user is null)
         {
             return NotFound();
         }
 
         var movie = _context.Movies.Find(movieDto.imdbID);
 
-        string OMDBAPIKey = _config["Movies:OMDBAPIKey"];
-        MovieDto omdbmovie = await _httpClient.GetFromJsonAsync<MovieDto>($"{OMDBAPIUrl}apikey={OMDBAPIKey}&i={movieDto.imdbID}");
 
         if (movie == null)
         {
+            string OMDBAPIKey = _config["Movies:OMDBAPIKey"];
+            MovieDto omdbmovie = await _httpClient.GetFromJsonAsync<MovieDto>($"{OMDBAPIUrl}apikey={OMDBAPIKey}&i={movieDto.imdbID}");
+
             await _context.Movies.AddAsync(new Movie
             {
                 imdbID = omdbmovie.imdbID,
@@ -139,17 +140,32 @@ public class MovieController : Controller
             ApplicationUserId = user.Id,
             MovieId = movie.imdbID
         };
+        try
+        {
+            if (user.ApplicationUserMovies.Any(m => m.Movie.imdbID == movie.imdbID && m.ApplicationUserId == user.Id))
+            {
+                //return BadRequest("Movie already exists in user's favorites.");
+                //return BadRequest(new { error = "bad request", message = "Movie already exists in user's favorites." });
+                var problem = new ProblemDetails
+                {
+                    Title = "Bad Request",
+                    Detail = "Movie already exists in user's favorites.",
+                    Status = StatusCodes.Status400BadRequest,
+                    Instance = HttpContext.Request.Path
+                };
 
-        if (user.ApplicationUserMovies.Any(m => m.Movie.imdbID == movie.imdbID && m.ApplicationUserId == user.Id))
-        {
-            return BadRequest("Movie already exists in user's favorites.");
-        } else
-        {
-            user.ApplicationUserMovies.Add(applicationUserMovie);
-            await _context.SaveChangesAsync();
-            return Ok("Movie added to favorites.");
+                return BadRequest(problem);
+            }
+            else
+            {
+                user.ApplicationUserMovies.Add(applicationUserMovie);
+                await _context.SaveChangesAsync();
+                return Ok("Movie added to favorites.");
+            }
         }
-
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
-
 }
