@@ -1,14 +1,15 @@
 ﻿@page "/"
 @rendermode InteractiveWebAssembly
 @using HPCTechSpring2025MovieApp.Shared
-@using HPCTechSpring2025MovieApp.Client.Components;
+@using HPCTechSpring2025MovieApp.Client.Components
 
-@if (user?.FavoriteMovies.Any() ?? false)
+
+@if (userDto?.FavoriteMovies.Any() ?? false)
 {
-    <p>Favorite Movie List @(user is not null ? $"for {user.FirstName} {user.LastName}" : "")</p>
+    <p>Favorite Movie List @(userDto is not null ? $"for {userDto.FirstName} {userDto.LastName}" : "")</p>
     <div class="container">
         <div class="row">
-            @foreach (MovieDto movie in user.FavoriteMovies)
+            @foreach (MovieDto movie in userDto.FavoriteMovies)
             {
                <div class="col-lg-2 my-4">
                     <MovieDetails movie="movie" />

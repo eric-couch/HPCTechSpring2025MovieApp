@@ -16,6 +16,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 builder.Services.AddSyncfusionBlazor();
+// this adds the usermovieshttprepo to the dependency injection container
 builder.Services.AddScoped<IUserMoviesHttpRepository, UserMoviesHttpRepository>();
 
 await builder.Build().RunAsync();

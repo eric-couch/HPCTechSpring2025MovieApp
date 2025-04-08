@@ -1,4 +1,5 @@
-﻿using HPCTechSpring2025MovieApp.Shared;
+﻿using HPCTechSpring2025MovieApp.Client.HttpRepo;
+using HPCTechSpring2025MovieApp.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Syncfusion.Blazor.Grids;
@@ -14,18 +15,31 @@ public partial class Search
     public HttpClient Http { get; set; }
     [Inject]
     public IJSRuntime js { get; set; }
-
+    //[Inject]
+    //public IUserMoviesHttpRepository UserMoviesHttpRepository { get; set; }
     private string searchTerm;
     public MovieSearchResultDto searchResult { get; set; }
     public List<MovieSearchResultItemDto> OMDBMovies { get; set; } = new();
-    public MovieSearchResultItemDto SelectedMovie { get; set; }
+    public MovieSearchResultItemDto? SelectedMovie { get; set; } = null;
 
-    //private SfToast ToastObj;
-    //private string toastContent = string.Empty;
-    //private string toastCSS = "e-toast-success";
+    private bool IsClient { get; set; }
+    private SfToast ToastObj;
+    private string toastContent = string.Empty;
+    private string toastCSS = "e-toast-success";
     public MovieDto? omdbMovie { get; set; }
     private int page { get; set; } = 1;
     private int totalItems { get; set; } = 0;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsClient = js is not null &&
+                       js.GetType().Name.Contains("WebAssemblyJSRuntime");
+
+        }
+    }
 
     public async Task GetSelectedRow(RowSelectEventArgs<MovieSearchResultItemDto> args)
     {
@@ -42,6 +56,7 @@ public partial class Search
 
     private async Task SearchOMDB()
     {
+        SelectedMovie = null;
         searchResult = await Http.GetFromJsonAsync<MovieSearchResultDto>($"api/SearchMovies?searchTerm={searchTerm}&page={page}");
         if (searchResult?.Search?.Any() ?? false)
         {
@@ -62,10 +77,17 @@ public partial class Search
     {
         if (SelectedMovie is null)
         {
-            //toastContent = "Select a movie first";
-            //toastCSS = "e-toast-warning";
-            //await ToastObj.ShowAsync();
-            js.InvokeVoidAsync("alert", "Select a movie first!!");
+            if (IsClient)
+            {
+                toastContent = "Select a movie first";
+                toastCSS = "e-toast-warning";
+                StateHasChanged();
+                await Task.Delay(100);
+                await ToastObj.ShowAsync();
+            } else
+            {
+                js.InvokeVoidAsync("alert", "Select a movie first!!");
+            }
             return;
         }
         MovieDto newMovie = new MovieDto()
@@ -76,17 +98,36 @@ public partial class Search
         // grab problem response
         var res = await Http.PostAsJsonAsync($"api/add-movie", newMovie);
 
-        var problem = await res.Content.ReadFromJsonAsync<ProblemResponse>();
-
         if (res.IsSuccessStatusCode)
         {
             // toast response success
-            js.InvokeVoidAsync("alert", "good!");
+            if (IsClient)
+            {
+                toastContent = "Movie added";
+                toastCSS = "e-toast-success";
+                StateHasChanged();
+                await Task.Delay(100);
+                await ToastObj.ShowAsync();
+            } else
+            {
+                js.InvokeVoidAsync("alert", "Movie added");
+            }
+                
         } else
         {
+            var problem = await res.Content.ReadFromJsonAsync<ProblemResponse>();
             // toast response failure
-            js.InvokeVoidAsync("alert", $"{problem?.Detail ?? "error"}");
+            if (IsClient)
+            {
+                toastContent = $"{problem?.Detail ?? "error occured"}";
+                toastCSS = "e-toast-danger";
+                StateHasChanged();
+                await Task.Delay(100);
+                await ToastObj.ShowAsync();
+            } else
+            {
+                js.InvokeVoidAsync("alert", $"{problem?.Detail ?? "error occured"}");
+            }
         }
-
     }
 }

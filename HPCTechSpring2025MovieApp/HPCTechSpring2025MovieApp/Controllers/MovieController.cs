@@ -3,149 +3,116 @@ using HPCTechSpring2025MovieApp.Shared;
 using HPCTechSpring2025MovieApp.Data;
 using Microsoft.AspNetCore.Identity;
 using HPCTechSpring2025MovieApp.Models;
+using HPCTechSpring2025MovieApp.Services;
+using Microsoft.OpenApi.Services;
+using Syncfusion.Blazor.PivotView;
 
 namespace HPCTechSpring2025MovieApp.Controllers;
 
 public class MovieController : Controller
 {
-    private readonly HttpClient _httpClient;
-    private readonly IConfiguration _config;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ApplicationDbContext _context;
-    private readonly string OMDBAPIUrl = "http://www.omdbapi.com/?";
+    private readonly IMovieService _movieService;
+    private readonly IUserService _userService;
 
-    public MovieController( HttpClient httpClient, 
-                            IConfiguration config,
-                            UserManager<ApplicationUser> userManager, 
-                            ApplicationDbContext context)
+    public MovieController(IMovieService movieService, IUserService userService)
     {
-        _httpClient = httpClient;
-        _config = config;
-        _userManager = userManager;
-        _context = context;
+        _movieService = movieService;
+        _userService = userService;
     }
-
-    //// /api/Movie
-    //[HttpGet]
-    //public async Task<IActionResult> ListMovies()
-    //{
-    //    return Ok("ListMovies");
-    //}
-
-    //// /api/Movie/1
-    //[HttpGet("{id}")]
-    //public async Task<IActionResult> GetMovie(int id)
-    //{
-    //    return Ok("GetMovie");
-    //}
 
     [HttpGet]
     [Route("api/SearchMovies")]
     public async Task<IActionResult> SearchOMDBMovies([FromQuery] string searchTerm, int page = 1)
     {
-        string OMDBAPIKey = _config["Movies:OMDBAPIKey"];
-        var searchResult = await _httpClient.GetFromJsonAsync<MovieSearchResultDto>($"{OMDBAPIUrl}apikey={OMDBAPIKey}&s={searchTerm}&page={page}");
-        if (searchResult?.Search?.Any() ?? false)
+        try
         {
-            return Ok(searchResult);
+            var searchResult = await _movieService.SearchOMDBMovies(searchTerm, page);
+            if (searchResult?.Search?.Any() ?? false)
+            {
+                return Ok(searchResult);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            return NotFound();
+            Console.WriteLine(ex.Message);
+            return BadRequest(ex.Message);
         }
-    }
 
-    //[HttpPost]
-    //[Route("api/SearchMovies/{id?:int}")]
-    //[Route("api/SearchOMDBMoviesPost")]
-    //public async Task<IActionResult> SearchOMDBMoviesPost([FromBody] MovieDto movie)
-    //{
-    //    string OMDBAPIKey = _config["Movies:OMDBAPIKey"];
-    //    var searchResult = await _httpClient.GetFromJsonAsync<MovieSearchResultDto>($"{OMDBAPIUrl}apikey={OMDBAPIKey}&s={searchTerm}");
-    //    if (searchResult?.Search?.Any() ?? false)
-    //    {
-    //        return Ok(searchResult);
-    //    }
-    //    else
-    //    {
-    //        return NotFound();
-    //    }
-    //}
+        
+    }
 
     [HttpGet]
     [Route("api/GetMovie")]
     public async Task<IActionResult> GetOMDBMovie(string imdbID)
     {
-        string OMDBAPIKey = _config["Movies:OMDBAPIKey"];
-        MovieDto movie = await _httpClient.GetFromJsonAsync<MovieDto>($"{OMDBAPIUrl}apikey={OMDBAPIKey}&i={imdbID}");
-        if (movie != null) { 
-            return Ok(movie);
-        } else
+        try
         {
+            if (string.IsNullOrWhiteSpace(imdbID))
+            {
+                return BadRequest();
+            }
+            MovieDto movie = await _movieService.GetOMDBMovie(imdbID);
+
+            if (movie != null)
+            {
+                return Ok(movie);
+            }
+            else
+            {
+                return NotFound();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
             return NotFound();
         }
+        
     }
 
     [HttpPost("api/add-movie")]
     public async Task<IActionResult> AddMovie([FromBody] MovieDto movieDto)
     {
         var userName = User.Identity?.Name;
-        var user = await _userManager.FindByNameAsync(userName);
+        //var user = await _userManager.FindByNameAsync(userName);
+        var user = await _userService.GetUserByUserNameAsync(userName);
 
         if (user is null)
         {
             return NotFound();
         }
 
-        var movie = _context.Movies.Find(movieDto.imdbID);
+        //var movie = _context.Movies.Find(movieDto.imdbID);
+        var movie = await _movieService.GetMovieById(movieDto.imdbID);
 
 
         if (movie == null)
         {
-            string OMDBAPIKey = _config["Movies:OMDBAPIKey"];
-            MovieDto omdbmovie = await _httpClient.GetFromJsonAsync<MovieDto>($"{OMDBAPIUrl}apikey={OMDBAPIKey}&i={movieDto.imdbID}");
-
-            await _context.Movies.AddAsync(new Movie
-            {
-                imdbID = omdbmovie.imdbID,
-                Title = omdbmovie.Title,
-                Year = omdbmovie.Year,
-                Rated = omdbmovie.Rated,
-                Released = omdbmovie.Released,
-                Runtime = omdbmovie.Runtime,
-                Genre = omdbmovie.Genre,
-                Director = omdbmovie.Director,
-                Writer = omdbmovie.Writer,
-                Actors = omdbmovie.Actors,
-                Plot = omdbmovie.Plot,
-                Language = omdbmovie.Language,
-                Country = omdbmovie.Country,
-                Awards = omdbmovie.Awards,
-                Poster = omdbmovie.Poster,
-                Metascore = omdbmovie.Metascore,
-                imdbRating = omdbmovie.imdbRating,
-                imdbVotes = omdbmovie.imdbVotes,
-                Type = omdbmovie.Type,
-                DVD = omdbmovie.DVD,
-                BoxOffice = omdbmovie.BoxOffice,
-                Production = omdbmovie.Production,
-                Website = omdbmovie.Website,
-                Response = omdbmovie.Response
-            });
-            movie = _context.Movies.Find(movieDto.imdbID);
+            MovieDto omdbMovie = await _movieService.GetOMDBMovie(movieDto.imdbID);
+            movie = await _movieService.AddMovie(omdbMovie);
         }
 
         var applicationUserMovie = new ApplicationUserMovie
         {
             ApplicationUserId = user.Id,
-            MovieId = movie.imdbID
+            MovieId = movie.imdbID,
+            ApplicationUser = user,
+            Movie = movie
         };
         try
         {
-            if (user.ApplicationUserMovies.Any(m => m.Movie.imdbID == movie.imdbID && m.ApplicationUserId == user.Id))
+            bool success = await _movieService.AddMovieToUser(applicationUserMovie);
+            if (success)
             {
-                //return BadRequest("Movie already exists in user's favorites.");
-                //return BadRequest(new { error = "bad request", message = "Movie already exists in user's favorites." });
+                return Ok(movie);   
+            }
+            else
+            {
                 var problem = new ProblemDetails
                 {
                     Title = "Bad Request",
@@ -155,12 +122,6 @@ public class MovieController : Controller
                 };
 
                 return BadRequest(problem);
-            }
-            else
-            {
-                user.ApplicationUserMovies.Add(applicationUserMovie);
-                await _context.SaveChangesAsync();
-                return Ok("Movie added to favorites.");
             }
         }
         catch (Exception ex)

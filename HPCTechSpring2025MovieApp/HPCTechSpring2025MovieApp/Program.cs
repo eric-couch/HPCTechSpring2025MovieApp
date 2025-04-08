@@ -2,6 +2,7 @@ using HPCTechSpring2025MovieApp.Client.Pages;
 using HPCTechSpring2025MovieApp.Components;
 using HPCTechSpring2025MovieApp.Components.Account;
 using HPCTechSpring2025MovieApp.Data;
+using HPCTechSpring2025MovieApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,8 +42,16 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 // Add controllers for API endpoints.
-builder.Services.AddControllers();
+// JsonSerializerOptions ignore cycles fixed the many-to-many serialization cycle problem
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

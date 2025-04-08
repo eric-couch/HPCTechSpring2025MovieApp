@@ -1,7 +1,6 @@
 ﻿using HPCTechSpring2025MovieApp.Shared;
 using HPCTechSpring2025MovieApp.Shared.Wrapper;
 using System.Net.Http.Json;
-using static System.Net.WebRequestMethods;
 
 namespace HPCTechSpring2025MovieApp.Client.HttpRepo;
 

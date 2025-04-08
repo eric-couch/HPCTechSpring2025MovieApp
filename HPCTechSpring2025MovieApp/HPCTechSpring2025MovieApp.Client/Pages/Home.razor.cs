@@ -10,28 +10,37 @@ namespace HPCTechSpring2025MovieApp.Client.Pages;
 public partial class Home
 {
     [Inject]
-    public IUserMoviesHttpRepository UserMoviesHttpRepository { get; set; }
-    public AuthenticationStateProvider asp { get; set; }
-    public UserDto user { get; set; } = new UserDto();
+    public HttpClient Http { get; set; }
+    //[Inject]
+    //public IUserMoviesHttpRepository UserMoviesHttpRepository { get; set; } = default!;
+    [Inject]
+    public AuthenticationStateProvider asp { get; set; } = default!;
+    public UserDto userDto { get; set; } = new UserDto();
     bool isAuthenticated = false;
     protected override async Task OnInitializedAsync()
     {
         var authState = await asp.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        if (authState.User?.Identity?.IsAuthenticated == true)
+        if (user.Identity?.IsAuthenticated == true)
         {
             isAuthenticated = true;
             try
             {
-                //this.user = await Http.GetFromJsonAsync<UserDto>("api/User");
-                DataResponse<UserDto> userDto = await UserMoviesHttpRepository.GetUserAsync();
-                if (userDto.Succeeded)
+                DataResponse<UserDto> res = await Http.GetFromJsonAsync<DataResponse<UserDto>>("api/User");
+                //DataResponse<UserDto> res = await UserMoviesHttpRepository.GetUserAsync();
+                if (res.Succeeded)
                 {
-                    user = userDto.Data;
-                } else
+                    userDto = res.Data;
+                }
+                else
                 {
                     // add toast using the userDto.Message and userDto.Errors
                 }
+
+
+                
+                
 
             }
             catch (Exception ex)
@@ -40,9 +49,10 @@ public partial class Home
                 // TODO: add logging
             }
 
-        } else
+        }
+        else
         {
-            
+
         }
     }
 }

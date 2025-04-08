@@ -53,11 +53,14 @@
     </div>
 }
 
-@* <SfToast    @ref="ToastObj"
-            ShowProgressBar="true"
-            ShowCloseButton="true"
-            Content="@toastContent"
-            CssClass="@toastCSS"
-            Timeout="5000">
-        <ToastPosition  X="Center" Y="Top"></ToastPosition>
-</SfToast> *@
+@if (IsClient)
+{
+    <SfToast    @ref="ToastObj"
+                ShowProgressBar="true"
+                ShowCloseButton="true"
+                Content="@toastContent"
+                CssClass="@toastCSS"
+                Timeout="5000">
+            <ToastPosition  X="Center" Y="Top"></ToastPosition>
+    </SfToast>
+}
