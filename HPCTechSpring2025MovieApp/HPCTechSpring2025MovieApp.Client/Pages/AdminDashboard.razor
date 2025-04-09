@@ -1,0 +1,36 @@
+﻿@page "/admin-dashboard"
+@rendermode InteractiveWebAssembly
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Navigations
+@using HPCTechSpring2025MovieApp.Shared
+@attribute [Authorize(Roles ="Admin")]
+
+<h3>Admin Dashboard</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @ErrorMessage
+    </div>
+}
+
+@if (Users?.Any() ?? false)
+{
+    <div class="container-fluid">
+        <div class="col">
+            <SfGrid DataSource="Users" TValue="UserEditDto" AllowSorting="true">
+                <GridColumns>
+                    <GridColumn Field="FirstName"></GridColumn>
+                    <GridColumn Field="LastName"></GridColumn>
+                    <GridColumn Field="UserName"></GridColumn>
+                    <GridColumn Field="Email"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+    </div>
+}
+
+
+

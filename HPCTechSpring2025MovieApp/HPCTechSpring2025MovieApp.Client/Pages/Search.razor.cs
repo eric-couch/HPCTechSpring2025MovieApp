@@ -15,6 +15,8 @@ public partial class Search
     public HttpClient Http { get; set; }
     [Inject]
     public IJSRuntime js { get; set; }
+    [Inject]
+    public ILogger<Search> Logger { get; set; }
     //[Inject]
     //public IUserMoviesHttpRepository UserMoviesHttpRepository { get; set; }
     private string searchTerm;
@@ -100,6 +102,7 @@ public partial class Search
 
         if (res.IsSuccessStatusCode)
         {
+
             // toast response success
             if (IsClient)
             {
@@ -115,6 +118,8 @@ public partial class Search
                 
         } else
         {
+            Logger.LogWarning("Error adding movie {Movie} to user favorites. " +
+                "Logged at {Placeholder:MMMM dd, yyyy}", SelectedMovie.imdbID, DateTimeOffset.UtcNow);
             var problem = await res.Content.ReadFromJsonAsync<ProblemResponse>();
             // toast response failure
             if (IsClient)

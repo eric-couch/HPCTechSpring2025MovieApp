@@ -13,11 +13,15 @@ public class MovieController : Controller
 {
     private readonly IMovieService _movieService;
     private readonly IUserService _userService;
+    private readonly ILogger<MovieController> _logger;
 
-    public MovieController(IMovieService movieService, IUserService userService)
+    public MovieController(     IMovieService movieService, 
+                                IUserService userService, 
+                                ILogger<MovieController> logger)
     {
         _movieService = movieService;
         _userService = userService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -113,6 +117,8 @@ public class MovieController : Controller
             }
             else
             {
+                _logger.LogWarning("User {UserName} Movie {Movie} already exists in user's favorites. " +
+                    "Logged at {Placeholder:MMMM dd, yyyy}", user.UserName, movie.imdbID, DateTimeOffset.UtcNow);
                 var problem = new ProblemDetails
                 {
                     Title = "Bad Request",

@@ -8,6 +8,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
+using Syncfusion.Blazor;
+
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mzc5MTMyMUAzMjM5MmUzMDJlMzAzYjMyMzkzYm8yQkFvUEVUbEphSGVJdDBGbkVsblVsMURuUGdUbkxrb1hBTUhnai9XUEk9");
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,6 +26,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingServerAuthenti
 
 builder.Services.AddHttpClient("OMDB", 
     client => client.BaseAddress = new Uri("http://www.omdbapi.com/"));
+
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
@@ -36,8 +42,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()                           // Add role services 
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
+    .AddRoleManager<RoleManager<IdentityRole>>()        // Add role manager
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
@@ -59,6 +67,10 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "HPCTechSpring2025MovieApp", Version = "v1" });
 });
 
+// Add the role initializer service to the DI container
+builder.Services.AddScoped<RoleInitializerService>();
+
+builder.Services.AddSyncfusionBlazor();
 
 var app = builder.Build();
 
@@ -99,5 +111,12 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+// Initialize the roles in the database
+using (var scope = app.Services.CreateScope())
+{
+    var roleInitializer = scope.ServiceProvider.GetRequiredService<RoleInitializerService>();
+    await roleInitializer.InitializeRolesAsync();
+}
 
 app.Run();

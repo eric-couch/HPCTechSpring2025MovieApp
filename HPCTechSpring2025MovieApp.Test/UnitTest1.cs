@@ -4,6 +4,7 @@ using HPCTechSpring2025MovieApp.Services;
 using HPCTechSpring2025MovieApp.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Security.Claims;
 
@@ -13,6 +14,7 @@ public class Tests
 {
     public readonly Mock<IMovieService> _movieServiceMock = new();
     public readonly Mock<IUserService> _userServiceMock = new();
+    public readonly Mock<ILogger<MovieController>> _loggerMock = new();
 
     [SetUp]
     public void Setup()
@@ -70,7 +72,17 @@ public class Tests
         _userServiceMock.Setup(x => x.GetUserByUserNameAsync(userName))
                         .ReturnsAsync(applicationUser);
 
-        MovieController movieController = new MovieController(_movieServiceMock.Object, _userServiceMock.Object);
+        _loggerMock.Setup(x => x.Log(
+            It.IsAny<LogLevel>(),
+            It.IsAny<EventId>(),
+            It.IsAny<It.IsAnyType>(),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()));
+
+
+        MovieController movieController = new MovieController(  _movieServiceMock.Object, 
+                                                                _userServiceMock.Object,
+                                                                _loggerMock.Object);
 
         // Act
         var response = await movieController.GetOMDBMovie(omdbId);
